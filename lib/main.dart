@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -6,10 +7,17 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  final phoneNumber = '';
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  TextEditingController phoneNumberController = new TextEditingController();
+
+  String phoneNumber = " ";
 
   // This widget is the root of your application.
   @override
@@ -30,6 +38,25 @@ class MyApp extends StatelessWidget {
         body: Center(
           child: Column(
             children: [
+              Expanded(
+                child: TextField(
+                  controller: phoneNumberController,
+                  textAlign: TextAlign.left,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(hintText: "Enter The Number"),
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  ],
+                  onSubmitted: ((value) {
+                    setState(() {
+                      phoneNumber = phoneNumberController.text;
+                    });
+                  }),
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
               MaterialButton(
                 onPressed: () async {
                   final _call = 'tel:$phoneNumber';
@@ -59,10 +86,10 @@ class MyApp extends StatelessWidget {
               ),
               MaterialButton(
                 onPressed: () async {
-                  final num = '9898989898';
+                  // final num = '9898989898';
                   // final num = 'tel:9898989898';
 
-                  await FlutterPhoneDirectCaller.callNumber(num);
+                  await FlutterPhoneDirectCaller.callNumber(phoneNumber);
                 },
                 color: Colors.blue,
                 child: Text("Direct Call"),
